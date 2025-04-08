@@ -5,7 +5,9 @@ import com.example.jwt_generation.Entity.Authority;
 import com.example.jwt_generation.Entity.User;
 import com.example.jwt_generation.Service.AuthorityImpl;
 import com.example.jwt_generation.Service.UserImp;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +17,11 @@ public class AuthenticationController {
 
     private final UserImp userImp;
     private final AuthorityImpl authorityImp;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthenticationController(UserImp userImp,AuthorityImpl authorityImp) {
+    public AuthenticationController(UserImp userImp,AuthorityImpl authorityImp,AuthenticationManager authenticationManager) {
         this.userImp = userImp;
+        this.authenticationManager = authenticationManager;
         this.authorityImp = authorityImp;
     }
 
@@ -35,7 +39,13 @@ public class AuthenticationController {
     @PostMapping("/login")
     public String login(@RequestBody User user){
 
-        return userImp.verify(user);
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+
+        if (authentication.isAuthenticated()){
+            return "the user is successfully logged in";
+        }
+
+        return "failed";
     }
 
 
