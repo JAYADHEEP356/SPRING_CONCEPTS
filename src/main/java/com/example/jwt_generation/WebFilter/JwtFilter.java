@@ -48,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails userDetails = context.getBean(MyUserDetailsImp.class).loadUserByUsername(username);
 
 
-            if(jwtService.validateToken()) {
+            if(jwtService.validateToken(token,userDetails)) {
                 UsernamePasswordAuthenticationToken filter2Token =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
