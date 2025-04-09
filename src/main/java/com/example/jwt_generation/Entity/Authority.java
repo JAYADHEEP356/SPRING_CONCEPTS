@@ -10,9 +10,9 @@ public class Authority {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+
     @JoinColumn(name = "username", nullable = false)
-    private User username;
+    private String username;
 
     @Column(name = "authority", nullable = false, length = 50)
     private String authority;
@@ -25,11 +25,11 @@ public class Authority {
         this.id = id;
     }
 
-    public User getUsername() {
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(User username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 

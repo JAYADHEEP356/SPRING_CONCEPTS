@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 
-@WebFilter
+
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -41,18 +41,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
             token = header.substring(7);
             username = jwtService.getUsername(token);
+            System.out.println("filter done: "+username);
         }
 
-        if(username!=null && SecurityContextHolder.getContext().getAuthentication()!=null){
+        if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+
+            System.out.println("entry point one1");
 
             UserDetails userDetails = context.getBean(MyUserDetailsImp.class).loadUserByUsername(username);
 
 
             if(jwtService.validateToken(token,userDetails)) {
+
+                System.out.println("entry point 2");
                 UsernamePasswordAuthenticationToken filter2Token =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 filter2Token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(filter2Token);
+                System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
             }
         }
 

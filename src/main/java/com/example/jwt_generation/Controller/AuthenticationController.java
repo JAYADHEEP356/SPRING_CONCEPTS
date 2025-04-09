@@ -4,6 +4,7 @@ package com.example.jwt_generation.Controller;
 import com.example.jwt_generation.Entity.Authority;
 import com.example.jwt_generation.Entity.User;
 import com.example.jwt_generation.Service.AuthorityImpl;
+import com.example.jwt_generation.Service.JwtService;
 import com.example.jwt_generation.Service.UserImp;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +19,13 @@ public class AuthenticationController {
     private final UserImp userImp;
     private final AuthorityImpl authorityImp;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public AuthenticationController(UserImp userImp,AuthorityImpl authorityImp,AuthenticationManager authenticationManager) {
+    public AuthenticationController(UserImp userImp, AuthorityImpl authorityImp, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userImp = userImp;
         this.authenticationManager = authenticationManager;
         this.authorityImp = authorityImp;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -30,7 +33,7 @@ public class AuthenticationController {
 
           userImp.Save(user);
           Authority authority = new Authority();
-          authority.setUsername(user);
+          authority.setUsername(user.getUsername());
           authority.setAuthority("ROLE_USER");
           authorityImp.Save(authority);
           return "the user was saved successfully";
@@ -42,7 +45,7 @@ public class AuthenticationController {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
 
         if (authentication.isAuthenticated()){
-            return "the user is successfully logged in";
+            return jwtService.generateToken(user.getUsername());
         }
 
         return "failed";
